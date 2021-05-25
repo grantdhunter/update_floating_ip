@@ -1,15 +1,28 @@
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: update_floating_ips
+  name: update-floating-ips
 spec:
   schedule: "*/1 * * * *"
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 100
       template:
+        metadata:
+          labels:
+            app: ufi
         spec:
           containers:
           - name: ufi
-            image:
+            image: grantdhunter/update_floating_ip:v1
             imagePullPolicy: IfNotPresent
+            env:
+              - name: DOMAIN
+                value: goatchat.ca
+              - name: DIGITALOCEAN_ACCESS_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: do-access
+                    key: DIGITALOCEAN_ACCESS_TOKEN
+
           restartPolicy: OnFailure
