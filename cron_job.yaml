@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: update_floating_ips
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: ufi
+            image:
+            imagePullPolicy: IfNotPresent
+          restartPolicy: OnFailure
