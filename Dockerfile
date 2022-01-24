@@ -1,11 +1,20 @@
-FROM python:3.8-slim
+FROM golang:1.17-alpine3.15 as builder
 
-WORKDIR /usr/src/app
+WORKDIR /build
 
-COPY requirement.txt ./
+COPY go.mod /build
+COPY go.sum /build
+RUN go mod download
 
-RUN pip install --no-cache-dir -r requirement.txt
+COPY *.go /build
 
-COPY . .
+RUN go build
 
-CMD ["python", "update_floating_ip.py"]
+FROM alpine:3.15
+WORKDIR /
+COPY --from=builder /build/update_floating_ip .
+
+
+
+
+ENTRYPOINT ["/update_floating_ip"]
