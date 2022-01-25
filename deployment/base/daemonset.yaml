@@ -1,0 +1,31 @@
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: ufi
+  labels:
+    app: ufi
+spec:
+  selector:
+    matchLabels:
+      app: ufi
+  template:
+    metadata:
+      labels:
+        app: ufi
+    spec:
+      containers:
+        - name: ufi
+          image: grantdhunter/update_floating_ip:v2
+          args: ["--wait", "goatchat.ca"]
+          env:
+            - name: DO_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: do-access
+                  key: DO_API_TOKEN
+
+          resources:
+            limits:
+              cpu: "10m"
+            requests:
+              cpu: "1m"
